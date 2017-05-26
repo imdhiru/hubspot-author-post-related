@@ -1,0 +1,62 @@
+<div class="blog-section">
+    <div class="blog-post-wrapper cell-wrapper">
+        <div class="section post-body">
+            {{ content.post_body }}
+        </div>
+    <div class="custom-share"><span class="custom-share-title"><h3>Share this blog post</h3></span>{% blog_social_sharing "blog_social_sharing" overrideable=False, label='Blog Social Sharing' %}</div>    
+
+    </div>
+</div>
+
+
+<!-- Optional: Blog Author Bio Box -->
+<div class="about-author-sec row-fluid">
+    <div class="author-image">
+        <img alt="{{ content.blog_post_author.display_name }}" src="{{ content.blog_post_author.avatar }}"> 
+    </div>
+</div>
+<div class="custom-related-wrapper">
+{% if content.topic_list %}
+  <h4 class="related-title">You should also read... </h4>
+  {% set max_posts = 1 %}<!-- Set the max number of related posts to be output to the page here -->
+  {% set post_list = [] %}
+  {% for topic in content.topic_list %}
+    {% set post_list = post_list + blog_recent_topic_posts('default', topic.slug, max_posts + 1 ) %}
+    {% if loop.last %}
+      {% set post_list = post_list|sort(true, false, 'publish_date')|unique('name') %}
+      {% set i = 0 %}
+      {% for post in post_list %}
+        {% if content.absolute_url != post.absolute_url and i < max_posts %}
+          <div class="related post-item">
+    		<div class="hs-featured-image-wrapper">
+				<div class="related-image"><img src="{{ post.featured_image }}" alt="{{ post.name }}"></div>
+			</div>
+			<div class="post-body">
+				<div class="related section-header">
+                <div class="custom-related-time">
+					<span class="custom-banner-author-image">{% if post.blog_post_author.avatar %} <div class="hs-author-avatar"> <img src="{{ post.blog_post_author.avatar }}"> </div> {% endif %}</span>
+					<span class="custom-banner-tag"><time>{{ post.publish_date_localized }}</time> | 
+					{% if post.topic_list %}
+						<span id="hubspot-topic_data" >
+					{% for topic in post.topic_list %}
+						<a class="topic-link" href="{{ post.absolute_url }}/topic/{{ topic.slug }}">{{ topic.name }}</a>{% if not loop.last %},{% endif %}
+					{% endfor %}
+					</span>
+					{% endif %}</span>
+                </div>
+					<h1><a href="{{post.absolute_url}}">{{ post.name}}</a></h1>
+                    <div class="custom-content"><div class="hidden-phone">{{ post.post_list_content|safe|truncatehtml(150, '...' , false) }}</div>
+                    <br>
+                    <a class="related-more-link" href="{{ post.absolute_url }}">Read More</a>
+                    </div>
+					</div>
+			</div>
+          </div>
+          {% set i = i + 1 %}          
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+</div>
+
